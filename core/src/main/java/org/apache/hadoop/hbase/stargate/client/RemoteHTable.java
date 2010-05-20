@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.hadoop.util.StringUtils;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.HTableDescriptor;
@@ -62,7 +63,7 @@ public class RemoteHTable {
   private static final Log LOG = LogFactory.getLog(RemoteHTable.class);
 
   final Client client;
-  final HBaseConfiguration conf;
+  final Configuration conf;
   final byte[] name;
   final String accessToken;
   final int maxRetries;
@@ -171,7 +172,7 @@ public class RemoteHTable {
    * @param name
    */
   public RemoteHTable(Client client, String name) {
-    this(client, new HBaseConfiguration(), Bytes.toBytes(name), null);
+    this(client, HBaseConfiguration.create(), Bytes.toBytes(name), null);
   }
 
   /**
@@ -181,7 +182,7 @@ public class RemoteHTable {
    * @param accessToken
    */
   public RemoteHTable(Client client, String name, String accessToken) {
-    this(client, new HBaseConfiguration(), Bytes.toBytes(name), accessToken);
+    this(client, HBaseConfiguration.create(), Bytes.toBytes(name), accessToken);
   }
 
   /**
@@ -191,7 +192,7 @@ public class RemoteHTable {
    * @param name
    * @param accessToken
    */
-  public RemoteHTable(Client client, HBaseConfiguration conf, String name,
+  public RemoteHTable(Client client, Configuration conf, String name,
       String accessToken) {
     this(client, conf, Bytes.toBytes(name), accessToken);
   }
@@ -200,7 +201,7 @@ public class RemoteHTable {
    * Constructor
    * @param conf
    */
-  public RemoteHTable(Client client, HBaseConfiguration conf, byte[] name,
+  public RemoteHTable(Client client, Configuration conf, byte[] name,
       String accessToken) {
     this.client = client;
     this.conf = conf;
@@ -214,7 +215,7 @@ public class RemoteHTable {
     return name.clone();
   }
 
-  public HBaseConfiguration getConfiguration() {
+  public Configuration getConfiguration() {
     return conf;
   }
 

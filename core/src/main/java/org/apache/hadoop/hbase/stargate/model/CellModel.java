@@ -25,14 +25,12 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.stargate.ProtobufMessageHandler;
 import org.apache.hadoop.hbase.stargate.protobuf.generated.CellMessage.Cell;
-import org.apache.hadoop.hbase.util.Bytes;
 
 import com.google.protobuf.ByteString;
 
@@ -56,7 +54,6 @@ import com.google.protobuf.ByteString;
  * </pre>
  */
 @XmlRootElement(name="Cell")
-@XmlType(propOrder={"column","timestamp"})
 public class CellModel implements ProtobufMessageHandler, Serializable {
   private static final long serialVersionUID = 1L;
   
@@ -117,8 +114,7 @@ public class CellModel implements ProtobufMessageHandler, Serializable {
    */
   public CellModel(byte[] column, byte[] qualifier, long timestamp,
       byte[] value) {
-    this.column = Bytes.add(column, KeyValue.COLUMN_FAMILY_DELIM_ARRAY,
-      qualifier);
+    this.column = KeyValue.makeColumn(column, qualifier);
     this.timestamp = timestamp;
     this.value = value;
   }

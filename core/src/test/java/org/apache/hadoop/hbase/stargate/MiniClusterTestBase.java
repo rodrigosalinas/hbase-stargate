@@ -20,9 +20,6 @@
 
 package org.apache.hadoop.hbase.stargate;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.HBaseClusterTestCase;
@@ -34,8 +31,6 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
-
-import junit.framework.TestCase;
 
 public class MiniClusterTestBase extends HBaseClusterTestCase
     implements Constants {

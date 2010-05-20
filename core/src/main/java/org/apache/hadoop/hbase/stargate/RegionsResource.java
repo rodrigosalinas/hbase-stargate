@@ -40,6 +40,7 @@ import org.apache.hadoop.hbase.HRegionInfo;
 import org.apache.hadoop.hbase.HServerAddress;
 import org.apache.hadoop.hbase.TableNotFoundException;
 import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.stargate.User;
 import org.apache.hadoop.hbase.stargate.model.TableInfoModel;
@@ -73,9 +74,9 @@ public class RegionsResource extends ResourceBase {
 
   Map<HRegionInfo,HServerAddress> getTableRegions() throws IOException {
     HTablePool pool = servlet.getTablePool();
-    HTable table = pool.getTable(actualTableName);
+    HTableInterface table = pool.getTable(actualTableName);
     try {
-      return table.getRegionsInfo();
+      return ((HTable)table).getRegionsInfo();
     } finally {
       pool.putTable(table);
     }

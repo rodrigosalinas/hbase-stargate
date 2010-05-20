@@ -55,7 +55,6 @@ public class TestCellModel extends TestCase {
     return model;
   }
 
-  @SuppressWarnings("unused")
   String toXML(CellModel model) throws JAXBException {
     StringWriter writer = new StringWriter();
     context.createMarshaller().marshal(model, writer);
@@ -67,7 +66,6 @@ public class TestCellModel extends TestCase {
       context.createUnmarshaller().unmarshal(new StringReader(xml));
   }
 
-  @SuppressWarnings("unused")
   byte[] toPB(CellModel model) {
     return model.createProtobufOutput();
   }

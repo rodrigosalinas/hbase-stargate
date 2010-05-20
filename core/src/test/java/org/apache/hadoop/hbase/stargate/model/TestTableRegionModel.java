@@ -52,7 +52,6 @@ public class TestTableRegionModel extends TestCase {
     return model;
   }
 
-  @SuppressWarnings("unused")
   String toXML(TableRegionModel model) throws JAXBException {
     StringWriter writer = new StringWriter();
     context.createMarshaller().marshal(model, writer);

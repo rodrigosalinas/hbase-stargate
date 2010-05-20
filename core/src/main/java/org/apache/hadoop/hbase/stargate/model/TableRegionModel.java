@@ -24,7 +24,6 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.hadoop.hbase.util.Bytes;
 
@@ -43,7 +42,6 @@ import org.apache.hadoop.hbase.util.Bytes;
  * </pre>
  */
 @XmlRootElement(name="Region")
-@XmlType(propOrder = {"name","id","startKey","endKey","location"})
 public class TableRegionModel implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -93,7 +91,7 @@ public class TableRegionModel implements Serializable {
    */
   @XmlAttribute
   public String getName() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(table);
     sb.append(',');
     sb.append(Bytes.toString(startKey));

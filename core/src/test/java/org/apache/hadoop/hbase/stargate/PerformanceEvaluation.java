@@ -116,7 +116,7 @@ public class PerformanceEvaluation  {
   protected static Cluster cluster = new Cluster();
   protected static String accessToken = null;
 
-  volatile HBaseConfiguration conf;
+  volatile Configuration conf;
   private boolean nomapred = false;
   private int N = 1;
   private int R = ROWS_PER_GB;
@@ -148,7 +148,7 @@ public class PerformanceEvaluation  {
    * Constructor
    * @param c Configuration object
    */
-  public PerformanceEvaluation(final HBaseConfiguration c) {
+  public PerformanceEvaluation(final Configuration c) {
     this.conf = c;
 
     addCommandDescriptor(RandomReadTest.class, "randomRead",
@@ -688,13 +688,13 @@ public class PerformanceEvaluation  {
     protected final Status status;
     protected byte[] tableName;
     protected RemoteHTable table;
-    protected volatile HBaseConfiguration conf;
+    protected volatile Configuration conf;
 
     /**
      * Note that all subclasses of this class must provide a public contructor
      * that has the exact same list of arguments.
      */
-    Test(final HBaseConfiguration conf, final TestOptions options, final Status status) {
+    Test(final Configuration conf, final TestOptions options, final Status status) {
       super();
       this.startRow = options.getStartRow();
       this.perClientRunRows = options.getPerClientRunRows();
@@ -765,7 +765,7 @@ public class PerformanceEvaluation  {
 
   @SuppressWarnings("unused")
   static class RandomSeekScanTest extends Test {
-    RandomSeekScanTest(HBaseConfiguration conf, TestOptions options, Status status) {
+    RandomSeekScanTest(Configuration conf, TestOptions options, Status status) {
       super(conf, options, status);
     }
 
@@ -792,7 +792,7 @@ public class PerformanceEvaluation  {
 
   @SuppressWarnings("unused")
   static abstract class RandomScanWithRangeTest extends Test {
-    RandomScanWithRangeTest(HBaseConfiguration conf, TestOptions options, Status status) {
+    RandomScanWithRangeTest(Configuration conf, TestOptions options, Status status) {
       super(conf, options, status);
     }
 
@@ -832,7 +832,7 @@ public class PerformanceEvaluation  {
   }
 
   static class RandomScanWithRange10Test extends RandomScanWithRangeTest {
-    RandomScanWithRange10Test(HBaseConfiguration conf, TestOptions options, Status status) {
+    RandomScanWithRange10Test(Configuration conf, TestOptions options, Status status) {
       super(conf, options, status);
     }
 
@@ -843,7 +843,7 @@ public class PerformanceEvaluation  {
   }
 
   static class RandomScanWithRange100Test extends RandomScanWithRangeTest {
-    RandomScanWithRange100Test(HBaseConfiguration conf, TestOptions options, Status status) {
+    RandomScanWithRange100Test(Configuration conf, TestOptions options, Status status) {
       super(conf, options, status);
     }
 
@@ -854,7 +854,7 @@ public class PerformanceEvaluation  {
   }
 
   static class RandomScanWithRange1000Test extends RandomScanWithRangeTest {
-    RandomScanWithRange1000Test(HBaseConfiguration conf, TestOptions options, Status status) {
+    RandomScanWithRange1000Test(Configuration conf, TestOptions options, Status status) {
       super(conf, options, status);
     }
 
@@ -865,7 +865,7 @@ public class PerformanceEvaluation  {
   }
 
   static class RandomScanWithRange10000Test extends RandomScanWithRangeTest {
-    RandomScanWithRange10000Test(HBaseConfiguration conf, TestOptions options, Status status) {
+    RandomScanWithRange10000Test(Configuration conf, TestOptions options, Status status) {
       super(conf, options, status);
     }
 
@@ -876,7 +876,7 @@ public class PerformanceEvaluation  {
   }
 
   static class RandomReadTest extends Test {
-    RandomReadTest(HBaseConfiguration conf, TestOptions options, Status status) {
+    RandomReadTest(Configuration conf, TestOptions options, Status status) {
       super(conf, options, status);
     }
 
@@ -897,7 +897,7 @@ public class PerformanceEvaluation  {
   
   static class RandomWriteTest extends Test {
     int rowsPerPut;
-    RandomWriteTest(HBaseConfiguration conf, TestOptions options, Status status) {
+    RandomWriteTest(Configuration conf, TestOptions options, Status status) {
       super(conf, options, status);
       rowsPerPut = options.getRowsPerPut();
     }
@@ -927,7 +927,7 @@ public class PerformanceEvaluation  {
   static class ScanTest extends Test {
     private ResultScanner testScanner;
 
-    ScanTest(HBaseConfiguration conf, TestOptions options, Status status) {
+    ScanTest(Configuration conf, TestOptions options, Status status) {
       super(conf, options, status);
     }
     
@@ -958,7 +958,7 @@ public class PerformanceEvaluation  {
   }
   
   static class SequentialReadTest extends Test {
-    SequentialReadTest(HBaseConfiguration conf, TestOptions options, Status status) {
+    SequentialReadTest(Configuration conf, TestOptions options, Status status) {
       super(conf, options, status);
     }
     
@@ -973,7 +973,7 @@ public class PerformanceEvaluation  {
   
   static class SequentialWriteTest extends Test {
     int rowsPerPut;
-    SequentialWriteTest(HBaseConfiguration conf, TestOptions options, Status status) {
+    SequentialWriteTest(Configuration conf, TestOptions options, Status status) {
       super(conf, options, status);
       rowsPerPut = options.getRowsPerPut();
     }
@@ -1002,7 +1002,7 @@ public class PerformanceEvaluation  {
   static class FilteredScanTest extends Test {
     protected static final Log LOG = LogFactory.getLog(FilteredScanTest.class.getName());
 
-    FilteredScanTest(HBaseConfiguration conf, TestOptions options, Status status) {
+    FilteredScanTest(Configuration conf, TestOptions options, Status status) {
       super(conf, options, status);
     }
 
@@ -1077,7 +1077,7 @@ public class PerformanceEvaluation  {
       totalRows, getTableDescriptor().getName(), rowsPerPut);
     try {
       Constructor<? extends Test> constructor = cmd.getDeclaredConstructor(
-          HBaseConfiguration.class, TestOptions.class, Status.class);
+          Configuration.class, TestOptions.class, Status.class);
       t = constructor.newInstance(this.conf, options, status);
     } catch (NoSuchMethodException e) {
       throw new IllegalArgumentException("Invalid command class: " +
@@ -1250,7 +1250,7 @@ public class PerformanceEvaluation  {
    * @param args
    */
   public static void main(final String[] args) {
-    HBaseConfiguration c = new HBaseConfiguration();
+    Configuration c = HBaseConfiguration.create();
     System.exit(new PerformanceEvaluation(c).doCommandLine(args));
   }
 }

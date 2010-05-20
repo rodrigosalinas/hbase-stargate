@@ -28,7 +28,6 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.hadoop.hbase.stargate.ProtobufMessageHandler;
 import org.apache.hadoop.hbase.stargate.protobuf.generated.TableInfoMessage.TableInfo;
@@ -49,7 +48,6 @@ import com.google.protobuf.ByteString;
  * </pre>
  */
 @XmlRootElement(name="TableInfo")
-@XmlType(propOrder = {"name","regions"})
 public class TableInfoModel implements Serializable, ProtobufMessageHandler {
   private static final long serialVersionUID = 1L;
 

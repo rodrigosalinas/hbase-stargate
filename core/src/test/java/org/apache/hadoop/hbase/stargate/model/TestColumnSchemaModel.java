@@ -32,7 +32,7 @@ public class TestColumnSchemaModel extends TestCase {
   static final String COLUMN_NAME = "testcolumn";
   static final boolean BLOCKCACHE = true;
   static final int BLOCKSIZE = 16384;
-  static final boolean BLOOMFILTER = false;
+  static final String BLOOMFILTER = "NONE";
   static final String COMPRESSION = "GZ";
   static final boolean IN_MEMORY = false;
   static final int TTL = 86400;
@@ -41,7 +41,7 @@ public class TestColumnSchemaModel extends TestCase {
   static final String AS_XML =
     "<ColumnSchema name=\"testcolumn\"" +
       " BLOCKSIZE=\"16384\"" +
-      " BLOOMFILTER=\"false\"" +
+      " BLOOMFILTER=\"NONE\"" +
       " BLOCKCACHE=\"true\"" +
       " COMPRESSION=\"GZ\"" +
       " VERSIONS=\"1\"" +

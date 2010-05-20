@@ -126,9 +126,7 @@ public class ScannerInstanceResource extends ResourceBase {
         rowKey = value.getRow();
         rowModel = new RowModel(rowKey);
       }
-      rowModel.addCell(
-        new CellModel(value.getColumn(), value.getTimestamp(),
-              value.getValue()));
+      rowModel.addCell(new CellModel(value));
     } while (--count > 0);
     model.addRow(rowModel);
     ResponseBuilder response = Response.ok(model);
@@ -153,7 +151,9 @@ public class ScannerInstanceResource extends ResourceBase {
       ResponseBuilder response = Response.ok(value.getValue());
       response.cacheControl(cacheControl);
       response.header("X-Row", Base64.encode(value.getRow()));
-      response.header("X-Column", Base64.encode(value.getColumn()));
+      response.header("X-Column", 
+        Base64.encode(Bytes.add(value.getFamily(), 
+          KeyValue.COLUMN_FAMILY_DELIM_ARRAY, value.getQualifier())));
       response.header("X-Timestamp", value.getTimestamp());
       return response.build();
     } catch (IllegalStateException e) {

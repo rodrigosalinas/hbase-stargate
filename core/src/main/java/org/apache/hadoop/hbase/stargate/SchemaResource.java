@@ -46,7 +46,7 @@ import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableExistsException;
 import org.apache.hadoop.hbase.TableNotFoundException;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.stargate.User;
 import org.apache.hadoop.hbase.stargate.model.ColumnSchemaModel;
@@ -82,7 +82,7 @@ public class SchemaResource extends ResourceBase {
   private HTableDescriptor getTableSchema() throws IOException,
       TableNotFoundException {
     HTablePool pool = servlet.getTablePool();
-    HTable table = pool.getTable(actualTableName);
+    HTableInterface table = pool.getTable(actualTableName);
     try {
       return table.getTableDescriptor();
     } finally {

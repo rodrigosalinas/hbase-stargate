@@ -55,14 +55,13 @@ public class TestVersionModel extends TestCase {
   VersionModel buildTestModel() {
     VersionModel model = new VersionModel();
     model.setStargateVersion(STARGATE_VERSION);
-    model.setOsVersion(OS_VERSION);
-    model.setJvmVersion(JVM_VERSION);
+    model.setOSVersion(OS_VERSION);
+    model.setJVMVersion(JVM_VERSION);
     model.setServerVersion(JETTY_VERSION);
     model.setJerseyVersion(JERSEY_VERSION);
     return model;
   }
 
-  @SuppressWarnings("unused")
   String toXML(VersionModel model) throws JAXBException {
     StringWriter writer = new StringWriter();
     context.createMarshaller().marshal(model, writer);
@@ -74,7 +73,6 @@ public class TestVersionModel extends TestCase {
       context.createUnmarshaller().unmarshal(new StringReader(xml));
   }
 
-  @SuppressWarnings("unused")
   byte[] toPB(VersionModel model) {
     return model.createProtobufOutput();
   }
@@ -86,8 +84,8 @@ public class TestVersionModel extends TestCase {
 
   void checkModel(VersionModel model) {
     assertEquals(model.getStargateVersion(), STARGATE_VERSION);
-    assertEquals(model.getOsVersion(), OS_VERSION);
-    assertEquals(model.getJvmVersion(), JVM_VERSION);
+    assertEquals(model.getOSVersion(), OS_VERSION);
+    assertEquals(model.getJVMVersion(), JVM_VERSION);
     assertEquals(model.getServerVersion(), JETTY_VERSION);
     assertEquals(model.getJerseyVersion(), JERSEY_VERSION);
   }

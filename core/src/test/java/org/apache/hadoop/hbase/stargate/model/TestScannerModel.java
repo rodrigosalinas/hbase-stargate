@@ -69,7 +69,6 @@ public class TestScannerModel extends TestCase {
     return model;
   }
 
-  @SuppressWarnings("unused")
   String toXML(ScannerModel model) throws JAXBException {
     StringWriter writer = new StringWriter();
     context.createMarshaller().marshal(model, writer);
@@ -81,7 +80,6 @@ public class TestScannerModel extends TestCase {
       context.createUnmarshaller().unmarshal(new StringReader(xml));
   }
 
-  @SuppressWarnings("unused")
   byte[] toPB(ScannerModel model) {
     return model.createProtobufOutput();
   }

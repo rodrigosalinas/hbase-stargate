@@ -38,10 +38,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.Chore;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.stargate.auth.Authenticator;
 import org.apache.hadoop.hbase.stargate.auth.HBCAuthenticator;
@@ -127,7 +128,7 @@ public class RESTServlet extends ServletAdaptor
   }
 
   final String znode = INSTANCE_ZNODE_ROOT + "/" + System.currentTimeMillis();
-  transient final HBaseConfiguration conf;
+  transient final Configuration conf;
   transient final HTablePool pool;
   transient volatile ZooKeeperWrapper wrapper;
   transient Chore statusReporter;
@@ -194,7 +195,7 @@ public class RESTServlet extends ServletAdaptor
    * @throws IOException
    */
   public RESTServlet() throws IOException {
-    this.conf = new HBaseConfiguration();
+    this.conf = HBaseConfiguration.create();
     this.pool = new HTablePool(conf, 10);
     this.wrapper = initZooKeeperWrapper();
     this.statusReporter = new StatusReporter(
@@ -238,7 +239,7 @@ public class RESTServlet extends ServletAdaptor
     return wrapper;
   }
 
-  HBaseConfiguration getConfiguration() {
+  Configuration getConfiguration() {
     return conf;
   }
 
@@ -261,7 +262,7 @@ public class RESTServlet extends ServletAdaptor
     if (i != null) {
       return i.intValue();
     }
-    HTable table = pool.getTable(tableName);
+    HTableInterface table = pool.getTable(tableName);
     try {
       int maxAge = DEFAULT_MAX_AGE;
       for (HColumnDescriptor family : 

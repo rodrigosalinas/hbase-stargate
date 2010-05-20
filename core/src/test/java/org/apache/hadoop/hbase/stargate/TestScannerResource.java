@@ -49,8 +49,8 @@ import org.apache.hadoop.hbase.util.Bytes;
 
 public class TestScannerResource extends MiniClusterTestBase {
   static final String TABLE = "TestScannerResource";
-  static final String COLUMN_1 = "a:";
-  static final String COLUMN_2 = "b:";
+  static final String COLUMN_1 = "a";
+  static final String COLUMN_2 = "b";
 
   static int expectedRows1;
   static int expectedRows2;
@@ -76,7 +76,11 @@ public class TestScannerResource extends MiniClusterTestBase {
             k[1] = b2;
             k[2] = b3;
             Put put = new Put(k);
-            put.add(famAndQf[0], famAndQf[1], k);
+            if (famAndQf.length > 1 && famAndQf[1] != null) {
+              put.add(famAndQf[0], famAndQf[1], k);
+            } else {
+              put.add(famAndQf[0], null, k);
+            }
             table.put(put);
             count++;
           }

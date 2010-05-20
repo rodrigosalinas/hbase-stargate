@@ -35,7 +35,6 @@ import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HRegionInfo;
 import org.apache.hadoop.hbase.HServerAddress;
 import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
@@ -53,7 +52,7 @@ public class TestTableResource extends MiniClusterTestBase {
   static final Log LOG = LogFactory.getLog(TestTableResource.class);
 
   static String TABLE = "TestTableResource";
-  static String COLUMN = "test:";
+  static byte[] COLUMN = Bytes.toBytes("test");
   static Map<HRegionInfo,HServerAddress> regionMap;
 
   Client client;
@@ -78,7 +77,6 @@ public class TestTableResource extends MiniClusterTestBase {
     admin.createTable(htd);
     HTable table = new HTable(conf, TABLE);
     byte[] k = new byte[3];
-    byte [][] famAndQf = KeyValue.parseColumn(Bytes.toBytes(COLUMN));
     for (byte b1 = 'a'; b1 < 'z'; b1++) {
       for (byte b2 = 'a'; b2 < 'z'; b2++) {
         for (byte b3 = 'a'; b3 < 'z'; b3++) {
@@ -86,7 +84,7 @@ public class TestTableResource extends MiniClusterTestBase {
           k[1] = b2;
           k[2] = b3;
           Put put = new Put(k);
-          put.add(famAndQf[0], famAndQf[1], k);
+          put.add(COLUMN, null, k);
           table.put(put);
         }
       }

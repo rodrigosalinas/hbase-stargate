@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 The Apache Software Foundation
+ * Copyright 2010 The Apache Software Foundation
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -34,6 +34,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import junit.framework.TestCase;
 
 public class TestCellSetModel extends TestCase {
+
   static final byte[] ROW1 = Bytes.toBytes("testrow1");
   static final byte[] COLUMN1 = Bytes.toBytes("testcolumn1");
   static final byte[] VALUE1 = Bytes.toBytes("testvalue1");
@@ -82,7 +83,6 @@ public class TestCellSetModel extends TestCase {
     return model;
   }
 
-  @SuppressWarnings("unused")
   String toXML(CellSetModel model) throws JAXBException {
     StringWriter writer = new StringWriter();
     context.createMarshaller().marshal(model, writer);
@@ -94,7 +94,6 @@ public class TestCellSetModel extends TestCase {
       context.createUnmarshaller().unmarshal(new StringReader(xml));
   }
 
-  @SuppressWarnings("unused")
   byte[] toPB(CellSetModel model) {
     return model.createProtobufOutput();
   }
@@ -140,7 +139,7 @@ public class TestCellSetModel extends TestCase {
       RowModel.class);
   }
 
-  public void testCellSetModel() throws Exception {
+  public void testCellsetModel() throws Exception {
     checkModel(buildTestModel());
     checkModel(fromXML(AS_XML));
     checkModel(fromPB(AS_PB));

@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.filter.Filter;
@@ -39,11 +39,18 @@ public class RowResultGenerator extends ResultGenerator {
   public RowResultGenerator(final String tableName, final RowSpec rowspec,
       final Filter filter) throws IllegalArgumentException, IOException {
     HTablePool pool = RESTServlet.getInstance().getTablePool(); 
-    HTable table = pool.getTable(tableName);
+    HTableInterface table = pool.getTable(tableName);
     try {
       Get get = new Get(rowspec.getRow());
       if (rowspec.hasColumns()) {
-        get.addColumns(rowspec.getColumns());
+        for (byte[] column: rowspec.getColumns()) {
+          byte[][] split = KeyValue.parseColumn(column);
+          if (split.length > 1 && split[1] != null) {
+            get.addColumn(split[0], split[1]);
+          } else {
+            get.addFamily(split[0]);
+          }
+        }
       } else {
         // rowspec does not explicitly specify columns, return them all
         for (HColumnDescriptor family: 

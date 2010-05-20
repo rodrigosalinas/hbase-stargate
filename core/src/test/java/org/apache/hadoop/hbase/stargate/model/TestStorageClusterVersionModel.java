@@ -42,7 +42,6 @@ public class TestStorageClusterVersionModel extends TestCase {
     return model;
   }
 
-  @SuppressWarnings("unused")
   String toXML(StorageClusterVersionModel model) throws JAXBException {
     StringWriter writer = new StringWriter();
     context.createMarshaller().marshal(model, writer);

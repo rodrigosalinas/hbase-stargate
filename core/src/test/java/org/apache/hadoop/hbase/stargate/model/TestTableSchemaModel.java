@@ -47,12 +47,11 @@ public class TestTableSchemaModel extends TestCase {
       TestColumnSchemaModel.AS_XML + 
     "</TableSchema>";
 
-  static final String AS_PB = 
+  private static final String AS_PB = 
     "Cgl0ZXN0VGFibGUSEAoHSVNfTUVUQRIFZmFsc2USEAoHSVNfUk9PVBIFZmFsc2USEQoIUkVBRE9O" +
-    "TFkSBWZhbHNlEhIKCUlOX01FTU9SWRIFZmFsc2UamAEKCnRlc3Rjb2x1bW4SEgoJQkxPQ0tTSVpF" +
-    "EgUxNjM4NBIUCgtCTE9PTUZJTFRFUhIFZmFsc2USEgoKQkxPQ0tDQUNIRRIEdHJ1ZRIRCgtDT01Q" +
-    "UkVTU0lPThICZ3oSDQoIVkVSU0lPTlMSATESDAoDVFRMEgU4NjQwMBISCglJTl9NRU1PUlkSBWZh" +
-    "bHNlGICjBSABKgJneiAAKAA=";
+    "TFkSBWZhbHNlGpcBCgp0ZXN0Y29sdW1uEhIKCUJMT0NLU0laRRIFMTYzODQSEwoLQkxPT01GSUxU" +
+    "RVISBE5PTkUSEgoKQkxPQ0tDQUNIRRIEdHJ1ZRIRCgtDT01QUkVTU0lPThICR1oSDQoIVkVSU0lP" +
+    "TlMSATESDAoDVFRMEgU4NjQwMBISCglJTl9NRU1PUlkSBWZhbHNlGICjBSABKgJHWigA";
 
   JAXBContext context;
 
@@ -70,7 +69,6 @@ public class TestTableSchemaModel extends TestCase {
     return model;
   }
 
-  @SuppressWarnings("unused")
   String toXML(TableSchemaModel model) throws JAXBException {
     StringWriter writer = new StringWriter();
     context.createMarshaller().marshal(model, writer);
@@ -82,7 +80,6 @@ public class TestTableSchemaModel extends TestCase {
       context.createUnmarshaller().unmarshal(new StringReader(xml));
   }
 
-  @SuppressWarnings("unused")
   byte[] toPB(TableSchemaModel model) {
     return model.createProtobufOutput();
   }

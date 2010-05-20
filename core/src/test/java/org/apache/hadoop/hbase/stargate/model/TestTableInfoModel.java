@@ -62,7 +62,6 @@ public class TestTableInfoModel extends TestCase {
     return model;
   }
 
-  @SuppressWarnings("unused")
   String toXML(TableInfoModel model) throws JAXBException {
     StringWriter writer = new StringWriter();
     context.createMarshaller().marshal(model, writer);
@@ -74,7 +73,6 @@ public class TestTableInfoModel extends TestCase {
       context.createUnmarshaller().unmarshal(new StringReader(xml));
   }
 
-  @SuppressWarnings("unused")
   byte[] toPB(TableInfoModel model) {
     return model.createProtobufOutput();
   }

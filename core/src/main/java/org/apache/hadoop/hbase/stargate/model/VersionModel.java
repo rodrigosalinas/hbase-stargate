@@ -34,10 +34,10 @@ import org.apache.hadoop.hbase.stargate.protobuf.generated.VersionMessage.Versio
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 /**
- * A representation of the collection of versions of the Stargate software
+ * A representation of the collection of versions of the REST gateway software
  * components.
  * <ul>
- * <li>stargateVersion: Stargate revision</li>
+ * <li>stargateVersion: REST gateway revision</li>
  * <li>jvmVersion: the JVM vendor and version information</li>
  * <li>osVersion: the OS type, version, and hardware architecture</li>
  * <li>serverVersion: the name and version of the servlet container</li>
@@ -78,7 +78,7 @@ public class VersionModel implements Serializable, ProtobufMessageHandler {
 	}
 
 	/**
-	 * @return the Stargate version
+	 * @return the REST gateway version
 	 */
 	@XmlAttribute(name="Stargate")
 	public String getStargateVersion() {
@@ -89,7 +89,7 @@ public class VersionModel implements Serializable, ProtobufMessageHandler {
 	 * @return the JVM vendor and version
 	 */
   @XmlAttribute(name="JVM")
-  public String getJvmVersion() {
+  public String getJVMVersion() {
     return jvmVersion;
   }
 
@@ -97,7 +97,7 @@ public class VersionModel implements Serializable, ProtobufMessageHandler {
    * @return the OS name, version, and hardware architecture
    */
   @XmlAttribute(name="OS")
-  public String getOsVersion() {
+  public String getOSVersion() {
     return osVersion;
   }
 
@@ -118,7 +118,7 @@ public class VersionModel implements Serializable, ProtobufMessageHandler {
   }
 
   /**
-   * @param version the Stargate version string
+   * @param version the REST gateway version string
    */
   public void setStargateVersion(String version) {
     this.stargateVersion = version;
@@ -127,14 +127,14 @@ public class VersionModel implements Serializable, ProtobufMessageHandler {
   /**
    * @param version the OS version string
    */
-  public void setOsVersion(String version) {
+  public void setOSVersion(String version) {
     this.osVersion = version;
   }
 
   /**
    * @param version the JVM version string
    */
-  public void setJvmVersion(String version) {
+  public void setJVMVersion(String version) {
     this.jvmVersion = version;
   }
 

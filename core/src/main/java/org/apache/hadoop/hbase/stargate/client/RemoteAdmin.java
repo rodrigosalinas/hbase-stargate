@@ -22,7 +22,7 @@ package org.apache.hadoop.hbase.stargate.client;
 
 import java.io.IOException;
 
-import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.stargate.Constants;
 import org.apache.hadoop.hbase.stargate.model.TableSchemaModel;
@@ -31,7 +31,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 public class RemoteAdmin {
 
   final Client client;
-  final HBaseConfiguration conf;
+  final Configuration conf;
   final String accessToken;
   final int maxRetries;
   final long sleepTime;
@@ -41,7 +41,7 @@ public class RemoteAdmin {
    * @param client
    * @param conf
    */
-  public RemoteAdmin(Client client, HBaseConfiguration conf) {
+  public RemoteAdmin(Client client, Configuration conf) {
     this(client, conf, null);
   }
 
@@ -51,7 +51,7 @@ public class RemoteAdmin {
    * @param conf
    * @param accessToken
    */
-  public RemoteAdmin(Client client, HBaseConfiguration conf, String accessToken) {
+  public RemoteAdmin(Client client, Configuration conf, String accessToken) {
     this.client = client;
     this.conf = conf;
     this.accessToken = accessToken;

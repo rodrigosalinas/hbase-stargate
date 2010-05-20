@@ -345,11 +345,7 @@ public class ScannerModel implements ProtobufMessageHandler, Serializable {
    * @param scan the scan specification
    * @throws Exception 
    */
-  @SuppressWarnings("deprecation")
   public static ScannerModel fromScan(Scan scan) throws Exception {
-    if (scan.getOldFilter() != null) {
-      throw new RuntimeException("old style filters are not supported");
-    }
     ScannerModel model = new ScannerModel();
     model.setStartRow(scan.getStartRow());
     model.setEndRow(scan.getStopRow());

@@ -44,6 +44,7 @@ import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.stargate.User;
@@ -109,9 +110,7 @@ public class RowResource extends ResourceBase {
           rowKey = value.getRow();
           rowModel = new RowModel(rowKey);
         }
-        rowModel.addCell(
-          new CellModel(value.getColumn(), value.getTimestamp(),
-              value.getValue()));
+        rowModel.addCell(new CellModel(value));
         if (++count > rowspec.getMaxValues()) {
           break;
         }
@@ -162,7 +161,7 @@ public class RowResource extends ResourceBase {
 
   Response update(final CellSetModel model, final boolean replace) {
     HTablePool pool = servlet.getTablePool();
-    HTable table = null;
+    HTableInterface table = null;
     try {
       List<RowModel> rows = model.getRows();
       // the user request limit is a transaction limit, so we need to
@@ -171,20 +170,21 @@ public class RowResource extends ResourceBase {
         throw new WebApplicationException(Response.status(509).build());
       }
       table = pool.getTable(actualTableName);
-      table.setAutoFlush(false);
+      ((HTable)table).setAutoFlush(false);
       for (RowModel row: rows) {
         byte[] key = row.getKey();
         Put put = new Put(key);
         for (CellModel cell: row.getCells()) {
           byte [][] parts = KeyValue.parseColumn(cell.getColumn());
-          put.add(parts[0], parts[1], cell.getTimestamp(), cell.getValue());
+          put.add(parts[0], parts.length > 1 ? parts[1] : null, 
+            cell.getTimestamp(), cell.getValue());
         }
         table.put(put);
         if (LOG.isDebugEnabled()) {
           LOG.debug("PUT " + put.toString());
         }
       }
-      table.setAutoFlush(true);
+      ((HTable)table).setAutoFlush(true);
       table.flushCommits();
       ResponseBuilder response = Response.ok();
       return response.build();
@@ -202,7 +202,7 @@ public class RowResource extends ResourceBase {
   Response updateBinary(final byte[] message, final HttpHeaders headers,
       final boolean replace) {
     HTablePool pool = servlet.getTablePool();
-    HTable table = null;    
+    HTableInterface table = null;    
     try {
       byte[] row = rowspec.getRow();
       byte[][] columns = rowspec.getColumns();
@@ -228,7 +228,8 @@ public class RowResource extends ResourceBase {
       }
       Put put = new Put(row);
       byte parts[][] = KeyValue.parseColumn(column);
-      put.add(parts[0], parts[1], timestamp, message);
+      put.add(parts[0], parts.length > 1 ? parts[1] : null, timestamp,
+        message);
       table = pool.getTable(actualTableName);
       table.put(put);
       if (LOG.isDebugEnabled()) {
@@ -336,7 +337,7 @@ public class RowResource extends ResourceBase {
       }
     }
     HTablePool pool = servlet.getTablePool();
-    HTable table = null;
+    HTableInterface table = null;
     try {
       table = pool.getTable(actualTableName);
       table.delete(delete);

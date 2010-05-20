@@ -20,25 +20,26 @@
 
 package org.apache.hadoop.hbase.stargate.auth;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.stargate.User;
 
 public class HBCAuthenticator extends Authenticator {
 
-  HBaseConfiguration conf;
+  Configuration conf;
 
   /**
    * Default constructor
    */
   public HBCAuthenticator() {
-    this(new HBaseConfiguration());
+    this(HBaseConfiguration.create());
   }
 
   /**
    * Constructor
    * @param conf
    */
-  public HBCAuthenticator(HBaseConfiguration conf) {
+  public HBCAuthenticator(Configuration conf) {
     this.conf = conf;
   }
 

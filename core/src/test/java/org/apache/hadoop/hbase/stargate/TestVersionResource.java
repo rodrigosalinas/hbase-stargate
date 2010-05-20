@@ -66,12 +66,12 @@ public class TestVersionResource extends MiniClusterTestBase {
     assertNotNull(model);
     assertNotNull(model.getStargateVersion());
     assertEquals(model.getStargateVersion(), RESTServlet.VERSION_STRING);
-    String osVersion = model.getOsVersion(); 
+    String osVersion = model.getOSVersion(); 
     assertNotNull(osVersion);
     assertTrue(osVersion.contains(System.getProperty("os.name")));
     assertTrue(osVersion.contains(System.getProperty("os.version")));
     assertTrue(osVersion.contains(System.getProperty("os.arch")));
-    String jvmVersion = model.getJvmVersion();
+    String jvmVersion = model.getJVMVersion();
     assertNotNull(jvmVersion);
     assertTrue(jvmVersion.contains(System.getProperty("java.vm.vendor")));
     assertTrue(jvmVersion.contains(System.getProperty("java.version")));

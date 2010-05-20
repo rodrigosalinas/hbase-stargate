@@ -20,6 +20,7 @@
 
 package org.apache.hadoop.hbase.stargate.auth;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.stargate.User;
 
@@ -35,12 +36,12 @@ public class TestHBCAuthenticator extends TestCase {
   static final String DISABLED_USERNAME = "disabledUser";
 
   HBCAuthenticator authenticator;
-  HBaseConfiguration conf;
+  Configuration conf;
 
   @Override 
   protected void setUp() throws Exception {
     super.setUp();
-    conf = new HBaseConfiguration();
+    conf = HBaseConfiguration.create();
     conf.set("stargate.auth.token." + USER_TOKEN, USER_USERNAME);
     conf.set("stargate.auth.user." + USER_USERNAME + ".admin", "false");
     conf.set("stargate.auth.user." + USER_USERNAME + ".disabled", "false");

@@ -26,7 +26,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HTable;
@@ -65,7 +65,7 @@ public class HTableTokenBucket implements Constants {
   static final byte[] TOKENS_RATE = Bytes.toBytes("tokens.rate");
   static final byte[] TOKENS_SIZE = Bytes.toBytes("tokens.size");
 
-  HBaseConfiguration conf;
+  Configuration conf;
   String tableName;
   HTable table;
   byte[] row;
@@ -97,7 +97,7 @@ public class HTableTokenBucket implements Constants {
    * @param row row key for user
    * @throws IOException
    */
-  public HTableTokenBucket(HBaseConfiguration conf, byte[] row) 
+  public HTableTokenBucket(Configuration conf, byte[] row) 
       throws IOException {
     this(conf, conf.get("stargate.tb.htable.name", USERS_TABLE), row);
   }
@@ -109,7 +109,7 @@ public class HTableTokenBucket implements Constants {
    * @param row row key for user
    * @throws IOException
    */
-  public HTableTokenBucket(HBaseConfiguration conf, String tableName,
+  public HTableTokenBucket(Configuration conf, String tableName,
       byte[] row) throws IOException {
     this.conf = conf;
     this.tableName = tableName;

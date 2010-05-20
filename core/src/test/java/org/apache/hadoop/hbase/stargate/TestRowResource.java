@@ -34,16 +34,18 @@ import org.apache.commons.httpclient.Header;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.stargate.client.Client;
-import org.apache.hadoop.hbase.stargate.client.Cluster;
-import org.apache.hadoop.hbase.stargate.client.Response;
-import org.apache.hadoop.hbase.stargate.model.CellModel;
-import org.apache.hadoop.hbase.stargate.model.CellSetModel;
-import org.apache.hadoop.hbase.stargate.model.RowModel;
+import org.apache.hadoop.hbase.rest.client.Client;
+import org.apache.hadoop.hbase.rest.client.Cluster;
+import org.apache.hadoop.hbase.rest.client.Response;
+import org.apache.hadoop.hbase.rest.model.CellModel;
+import org.apache.hadoop.hbase.rest.model.CellSetModel;
+import org.apache.hadoop.hbase.rest.model.RowModel;
 import org.apache.hadoop.hbase.util.Bytes;
 
 public class TestRowResource extends MiniClusterTestBase {
+
   static final String TABLE = "TestRowResource";
   static final String COLUMN_1 = "a:";
   static final String COLUMN_2 = "b:";
@@ -77,8 +79,10 @@ public class TestRowResource extends MiniClusterTestBase {
       return;
     }
     HTableDescriptor htd = new HTableDescriptor(TABLE);
-    htd.addFamily(new HColumnDescriptor(COLUMN_1));
-    htd.addFamily(new HColumnDescriptor(COLUMN_2));
+    htd.addFamily(new HColumnDescriptor(KeyValue.parseColumn(
+        Bytes.toBytes(COLUMN_1))[0]));
+    htd.addFamily(new HColumnDescriptor(KeyValue.parseColumn(
+        Bytes.toBytes(COLUMN_2))[0]));
     admin.createTable(htd);
   }
 
@@ -139,8 +143,8 @@ public class TestRowResource extends MiniClusterTestBase {
     return response;
   }
 
-  Response putValueXML(String table, String row, String column, String value)
-      throws IOException, JAXBException {
+  Response putValueXML(String table, String row, String column,
+      String value) throws IOException, JAXBException {
     StringBuilder path = new StringBuilder();
     path.append('/');
     path.append(table);
@@ -149,8 +153,7 @@ public class TestRowResource extends MiniClusterTestBase {
     path.append('/');
     path.append(column);
     RowModel rowModel = new RowModel(row);
-    rowModel.addCell(new CellModel(Bytes.toBytes(column),
-      Bytes.toBytes(value)));
+    rowModel.addCell(new CellModel(Bytes.toBytes(column), Bytes.toBytes(value)));
     CellSetModel cellSetModel = new CellSetModel();
     cellSetModel.addRow(rowModel);
     StringWriter writer = new StringWriter();
@@ -161,8 +164,8 @@ public class TestRowResource extends MiniClusterTestBase {
     return response;
   }
 
-  void checkValueXML(String table, String row, String column, String value)
-      throws IOException, JAXBException {
+  void checkValueXML(String table, String row, String column, 
+      String value) throws IOException, JAXBException {
     Response response = getValueXML(table, row, column);
     assertEquals(response.getCode(), 200);
     CellSetModel cellSet = (CellSetModel)
@@ -173,8 +176,8 @@ public class TestRowResource extends MiniClusterTestBase {
     assertEquals(Bytes.toString(cell.getValue()), value);
   }
 
-  Response putValuePB(String table, String row, String column, String value)
-      throws IOException {
+  Response putValuePB(String table, String row, String column,
+      String value) throws IOException {
     StringBuilder path = new StringBuilder();
     path.append('/');
     path.append(table);
@@ -183,8 +186,7 @@ public class TestRowResource extends MiniClusterTestBase {
     path.append('/');
     path.append(column);
     RowModel rowModel = new RowModel(row);
-    rowModel.addCell(new CellModel(Bytes.toBytes(column),
-      Bytes.toBytes(value)));
+    rowModel.addCell(new CellModel(Bytes.toBytes(column), Bytes.toBytes(value)));
     CellSetModel cellSetModel = new CellSetModel();
     cellSetModel.addRow(rowModel);
     Response response = client.put(path.toString(), MIMETYPE_PROTOBUF,
@@ -193,8 +195,8 @@ public class TestRowResource extends MiniClusterTestBase {
     return response;
   }
 
-  void checkValuePB(String table, String row, String column, String value)
-      throws IOException {
+  void checkValuePB(String table, String row, String column, 
+      String value) throws IOException {
     Response response = getValuePB(table, row, column);
     assertEquals(response.getCode(), 200);
     CellSetModel cellSet = new CellSetModel();
@@ -315,16 +317,12 @@ public class TestRowResource extends MiniClusterTestBase {
 
     CellSetModel cellSetModel = new CellSetModel();
     RowModel rowModel = new RowModel(ROW_1);
-    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_1),
-      Bytes.toBytes(VALUE_1)));
-    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_2),
-      Bytes.toBytes(VALUE_2)));
+    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_1), Bytes.toBytes(VALUE_1)));
+    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_2), Bytes.toBytes(VALUE_2)));
     cellSetModel.addRow(rowModel);
     rowModel = new RowModel(ROW_2);
-    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_1),
-      Bytes.toBytes(VALUE_3)));
-    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_2),
-      Bytes.toBytes(VALUE_4)));
+    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_1), Bytes.toBytes(VALUE_3)));
+    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_2), Bytes.toBytes(VALUE_4)));
     cellSetModel.addRow(rowModel);
     StringWriter writer = new StringWriter();
     marshaller.marshal(cellSetModel, writer);
@@ -353,16 +351,12 @@ public class TestRowResource extends MiniClusterTestBase {
 
     CellSetModel cellSetModel = new CellSetModel();
     RowModel rowModel = new RowModel(ROW_1);
-    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_1),
-      Bytes.toBytes(VALUE_1)));
-    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_2),
-      Bytes.toBytes(VALUE_2)));
+    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_1), Bytes.toBytes(VALUE_1)));
+    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_2), Bytes.toBytes(VALUE_2)));
     cellSetModel.addRow(rowModel);
     rowModel = new RowModel(ROW_2);
-    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_1),
-      Bytes.toBytes(VALUE_3)));
-    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_2),
-      Bytes.toBytes(VALUE_4)));
+    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_1), Bytes.toBytes(VALUE_3)));
+    rowModel.addCell(new CellModel(Bytes.toBytes(COLUMN_2), Bytes.toBytes(VALUE_4)));
     cellSetModel.addRow(rowModel);
     Response response = client.put(path, MIMETYPE_PROTOBUF,
       cellSetModel.createProtobufOutput());
@@ -385,11 +379,11 @@ public class TestRowResource extends MiniClusterTestBase {
   }
 
   public void testRowResource() throws Exception {
-    doTestDelete();
+    doTestDelete();    
     doTestSingleCellGetPutXML();
     doTestSingleCellGetPutPB();
-    doTestSingleCellGetPutBinary();
     doTestSingleCellGetJSON();
+    doTestSingleCellGetPutBinary();
     doTestURLEncodedKey();
     doTestMultiCellGetPutXML();
     doTestMultiCellGetPutPB();
