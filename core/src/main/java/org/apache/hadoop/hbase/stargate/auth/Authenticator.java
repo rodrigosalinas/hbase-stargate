@@ -18,32 +18,14 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.hbase.stargate;
+package org.apache.hadoop.hbase.stargate.auth;
 
 import java.io.IOException;
-import java.util.Iterator;
- 
-import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.filter.Filter;
-import org.apache.hadoop.hbase.stargate.model.ScannerModel;
 
-public abstract class ResultGenerator implements Iterator<KeyValue> {
+import org.apache.hadoop.hbase.stargate.User;
 
-  public static ResultGenerator fromRowSpec(final String table, 
-      final RowSpec rowspec, final Filter filter) throws IOException {
-    if (rowspec.isSingleRow()) {
-      return new RowResultGenerator(table, rowspec, filter);
-    } else {
-      return new ScannerResultGenerator(table, rowspec, filter);
-    }
-  }
+public abstract class Authenticator {
 
-  public static Filter buildFilter(final String filter) throws Exception {
-    return ScannerModel.buildFilter(filter);
-  }
-
-  public abstract void putBack(KeyValue kv);
-
-  public abstract void close();
+  public abstract User getUserForToken(String token) throws IOException;
 
 }

@@ -41,6 +41,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.hadoop.hbase.filter.Filter;
+
+import org.apache.hadoop.hbase.stargate.User;
 import org.apache.hadoop.hbase.stargate.model.ScannerModel;
 
 public class ScannerResource extends ResourceBase {
@@ -50,15 +52,19 @@ public class ScannerResource extends ResourceBase {
   static final Map<String,ScannerInstanceResource> scanners =
    Collections.synchronizedMap(new HashMap<String,ScannerInstanceResource>());
 
+  User user;
   String tableName;
+  String actualTableName;
 
-  /**
-   * Constructor
-   * @param table
-   * @throws IOException
-   */
-  public ScannerResource(String table) throws IOException {
+  public ScannerResource(User user, String table) throws IOException {
     super();
+    if (user != null) {
+      this.user = user;
+      this.actualTableName = 
+        !user.isAdmin() ? user.getName() + "." + table : table;
+    } else {
+      this.actualTableName = table;
+    }
     this.tableName = table;
   }
 
@@ -70,7 +76,10 @@ public class ScannerResource extends ResourceBase {
   }
 
   Response update(final ScannerModel model, final boolean replace, 
-      final UriInfo uriInfo) {
+      final UriInfo uriInfo) throws IOException {
+    if (!servlet.userRequestLimit(user, 1)) {
+      return Response.status(509).build();
+    }
     servlet.getMetrics().incrementRequests(1);
     byte[] endRow = model.hasEndRow() ? model.getEndRow() : null;
     RowSpec spec = new RowSpec(model.getStartRow(), endRow,
@@ -78,10 +87,11 @@ public class ScannerResource extends ResourceBase {
     try {
       Filter filter = ScannerResultGenerator.buildFilterFromModel(model);
       ScannerResultGenerator gen = 
-        new ScannerResultGenerator(tableName, spec, filter);
+        new ScannerResultGenerator(actualTableName, spec, filter);
       String id = gen.getID();
       ScannerInstanceResource instance = 
-        new ScannerInstanceResource(tableName, id, gen, model.getBatch());
+        new ScannerInstanceResource(user, actualTableName, id, gen, 
+          model.getBatch());
       scanners.put(id, instance);
       if (LOG.isDebugEnabled()) {
         LOG.debug("new scanner: " + id);
@@ -100,7 +110,7 @@ public class ScannerResource extends ResourceBase {
   @PUT
   @Consumes({MIMETYPE_XML, MIMETYPE_JSON, MIMETYPE_PROTOBUF})
   public Response put(final ScannerModel model, 
-      final @Context UriInfo uriInfo) {
+      final @Context UriInfo uriInfo) throws IOException {
     if (LOG.isDebugEnabled()) {
       LOG.debug("PUT " + uriInfo.getAbsolutePath());
     }
@@ -110,7 +120,7 @@ public class ScannerResource extends ResourceBase {
   @POST
   @Consumes({MIMETYPE_XML, MIMETYPE_JSON, MIMETYPE_PROTOBUF})
   public Response post(final ScannerModel model,
-      final @Context UriInfo uriInfo) {
+      final @Context UriInfo uriInfo) throws IOException {
     if (LOG.isDebugEnabled()) {
       LOG.debug("POST " + uriInfo.getAbsolutePath());
     }

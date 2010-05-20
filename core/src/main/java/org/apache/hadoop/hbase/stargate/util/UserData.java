@@ -18,32 +18,34 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.hbase.stargate;
+package org.apache.hadoop.hbase.stargate.util;
 
-import java.io.IOException;
-import java.util.Iterator;
- 
-import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.filter.Filter;
-import org.apache.hadoop.hbase.stargate.model.ScannerModel;
+import java.util.HashMap;
+import java.util.Map;
 
-public abstract class ResultGenerator implements Iterator<KeyValue> {
+/**
+ * Generic storage for per user information.
+ */
+public class UserData {
 
-  public static ResultGenerator fromRowSpec(final String table, 
-      final RowSpec rowspec, final Filter filter) throws IOException {
-    if (rowspec.isSingleRow()) {
-      return new RowResultGenerator(table, rowspec, filter);
-    } else {
-      return new ScannerResultGenerator(table, rowspec, filter);
-    }
+  public static final int TOKENBUCKET = 1;
+
+  Map<Integer,Object> data = new HashMap<Integer,Object>(1);
+
+  public synchronized boolean has(final int sel) {
+    return data.get(sel) != null;
   }
 
-  public static Filter buildFilter(final String filter) throws Exception {
-    return ScannerModel.buildFilter(filter);
+  public synchronized Object get(final int sel) {
+    return data.get(sel);
   }
 
-  public abstract void putBack(KeyValue kv);
+  public synchronized Object put(final int sel, final Object o) {
+    return data.put(sel, o);
+  }
 
-  public abstract void close();
+  public synchronized Object remove(int sel) {
+    return data.remove(sel);
+  }
 
 }

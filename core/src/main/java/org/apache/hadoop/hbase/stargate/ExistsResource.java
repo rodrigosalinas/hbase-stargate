@@ -42,25 +42,32 @@ public class ExistsResource extends ResourceBase {
     cacheControl.setNoTransform(false);
   }
 
+  User user;
   String tableName;
+  String actualTableName;
 
-  /**
-   * Constructor
-   * @param table
-   * @throws IOException
-   */
-  public ExistsResource(String table) throws IOException {
+  public ExistsResource(User user, String table) throws IOException {
     super();
+    if (user != null) {
+      this.user = user;
+      this.actualTableName = 
+        !user.isAdmin() ? (user.getName() + "." + table) : table;
+    } else {
+      this.actualTableName = table;
+    }
     this.tableName = table;
   }
 
   @GET
   @Produces({MIMETYPE_TEXT, MIMETYPE_XML, MIMETYPE_JSON, MIMETYPE_PROTOBUF,
     MIMETYPE_BINARY})
-  public Response get(final @Context UriInfo uriInfo) {
+  public Response get(final @Context UriInfo uriInfo) throws IOException {
+    if (!servlet.userRequestLimit(user, 1)) {
+      Response.status(509).build();
+    }
     try {
       HBaseAdmin admin = new HBaseAdmin(servlet.getConfiguration());
-      if (!admin.tableExists(tableName)) {
+      if (!admin.tableExists(actualTableName)) {
         throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
     } catch (IOException e) {

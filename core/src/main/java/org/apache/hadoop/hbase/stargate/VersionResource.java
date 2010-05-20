@@ -34,14 +34,16 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.hadoop.hbase.stargate.model.VersionModel;
 
 /**
- * Implements REST software version reporting
+ * Implements Stargate software version reporting via
+ * <p>
+ * <tt>/version/stargate</tt>
+ * <p>
+ * <tt>/version</tt> (alias for <tt>/version/stargate</tt>)
  */
 public class VersionResource extends ResourceBase {
-
   private static final Log LOG = LogFactory.getLog(VersionResource.class);
 
   static CacheControl cacheControl;
@@ -51,10 +53,6 @@ public class VersionResource extends ResourceBase {
     cacheControl.setNoTransform(false);
   }
 
-  /**
-   * Constructor
-   * @throws IOException
-   */
   public VersionResource() throws IOException {
     super();
   }
@@ -88,18 +86,10 @@ public class VersionResource extends ResourceBase {
   }
 
   /**
-   * Dispatch <tt>/version/rest</tt> to self.
-   */
-  @Path("rest")
-  public VersionResource getRESTVersionResource() {
-    return this;
-  }
-
-  /**
    * Dispatch <tt>/version/stargate</tt> to self.
    */
   @Path("stargate")
-  public VersionResource getStargateVersionResource() {
+  public VersionResource getVersionResource() {
     return this;
   }
 }

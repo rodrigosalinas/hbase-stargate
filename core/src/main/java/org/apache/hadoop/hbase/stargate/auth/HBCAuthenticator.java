@@ -18,32 +18,41 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.hbase.stargate;
+package org.apache.hadoop.hbase.stargate.auth;
 
-import java.io.IOException;
-import java.util.Iterator;
- 
-import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.filter.Filter;
-import org.apache.hadoop.hbase.stargate.model.ScannerModel;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.stargate.User;
 
-public abstract class ResultGenerator implements Iterator<KeyValue> {
+public class HBCAuthenticator extends Authenticator {
 
-  public static ResultGenerator fromRowSpec(final String table, 
-      final RowSpec rowspec, final Filter filter) throws IOException {
-    if (rowspec.isSingleRow()) {
-      return new RowResultGenerator(table, rowspec, filter);
-    } else {
-      return new ScannerResultGenerator(table, rowspec, filter);
+  HBaseConfiguration conf;
+
+  /**
+   * Default constructor
+   */
+  public HBCAuthenticator() {
+    this(new HBaseConfiguration());
+  }
+
+  /**
+   * Constructor
+   * @param conf
+   */
+  public HBCAuthenticator(HBaseConfiguration conf) {
+    this.conf = conf;
+  }
+
+  @Override
+  public User getUserForToken(String token) {
+    String name = conf.get("stargate.auth.token." + token);
+    if (name == null) {
+      return null;
     }
+    boolean admin = conf.getBoolean("stargate.auth.user." + name + ".admin",
+      false);
+    boolean disabled = conf.getBoolean("stargate.auth.user." + name + ".disabled",
+      false);
+    return new User(name, token, admin, disabled);
   }
-
-  public static Filter buildFilter(final String filter) throws Exception {
-    return ScannerModel.buildFilter(filter);
-  }
-
-  public abstract void putBack(KeyValue kv);
-
-  public abstract void close();
 
 }

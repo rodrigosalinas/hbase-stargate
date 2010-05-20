@@ -33,8 +33,8 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.filter.Filter;
 
 public class RowResultGenerator extends ResultGenerator {
-  private Iterator<KeyValue> valuesI;
-  private KeyValue cache;
+  Iterator<KeyValue> valuesI;
+  KeyValue cache;
 
   public RowResultGenerator(final String tableName, final RowSpec rowspec,
       final Filter filter) throws IllegalArgumentException, IOException {
@@ -43,14 +43,7 @@ public class RowResultGenerator extends ResultGenerator {
     try {
       Get get = new Get(rowspec.getRow());
       if (rowspec.hasColumns()) {
-        for (byte[] col: rowspec.getColumns()) {
-          byte[][] split = KeyValue.parseColumn(col);
-          if (split.length == 2 && split[1].length != 0) {
-            get.addColumn(split[0], split[1]);
-          } else {
-            get.addFamily(split[0]);
-          }
-        }
+        get.addColumns(rowspec.getColumns());
       } else {
         // rowspec does not explicitly specify columns, return them all
         for (HColumnDescriptor family: 

@@ -18,32 +18,44 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.hbase.stargate;
+package org.apache.hadoop.hbase.stargate.util;
 
-import java.io.IOException;
-import java.util.Iterator;
- 
-import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.filter.Filter;
-import org.apache.hadoop.hbase.stargate.model.ScannerModel;
+public class TokenBucket {
 
-public abstract class ResultGenerator implements Iterator<KeyValue> {
+  private int tokens;
+  private int rate;
+  private int size;
+  private long lastUpdated;
 
-  public static ResultGenerator fromRowSpec(final String table, 
-      final RowSpec rowspec, final Filter filter) throws IOException {
-    if (rowspec.isSingleRow()) {
-      return new RowResultGenerator(table, rowspec, filter);
-    } else {
-      return new ScannerResultGenerator(table, rowspec, filter);
+  /**
+   * Constructor
+   * @param rate limit in units per second
+   * @param size maximum burst in units per second
+   */
+  public TokenBucket(int rate, int size) {
+    this.rate = rate;
+    this.tokens = this.size = size;
+  }
+
+  /**
+   * @return the number of remaining tokens in the bucket
+   */
+  public int available() {
+    long now = System.currentTimeMillis();
+    long elapsed = now - lastUpdated;
+    lastUpdated = now;
+    tokens += elapsed * rate;
+    if (tokens > size) {
+      tokens = size;
     }
+    return tokens;
   }
 
-  public static Filter buildFilter(final String filter) throws Exception {
-    return ScannerModel.buildFilter(filter);
+  /**
+   * @param t the number of tokens to consume from the bucket
+   */
+  public void remove(int t) {
+    tokens -= t;
   }
-
-  public abstract void putBack(KeyValue kv);
-
-  public abstract void close();
 
 }

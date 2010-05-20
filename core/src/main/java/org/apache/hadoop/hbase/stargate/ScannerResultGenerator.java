@@ -51,11 +51,11 @@ public class ScannerResultGenerator extends ResultGenerator {
     return buildFilter(filter);
   }
 
-  private String id;
-  private Iterator<KeyValue> rowI;
-  private KeyValue cache;
-  private ResultScanner scanner;
-  private Result cached;
+  String id;
+  Iterator<KeyValue> rowI;
+  KeyValue cache;
+  ResultScanner scanner;
+  Result cached;
 
   public ScannerResultGenerator(final String tableName, final RowSpec rowspec,
       final Filter filter) throws IllegalArgumentException, IOException {

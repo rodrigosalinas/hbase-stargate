@@ -41,6 +41,7 @@ import org.apache.hadoop.hbase.HServerAddress;
 import org.apache.hadoop.hbase.TableNotFoundException;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.HTablePool;
+import org.apache.hadoop.hbase.stargate.User;
 import org.apache.hadoop.hbase.stargate.model.TableInfoModel;
 import org.apache.hadoop.hbase.stargate.model.TableRegionModel;
 
@@ -54,17 +55,25 @@ public class RegionsResource extends ResourceBase {
     cacheControl.setNoTransform(false);
   }
 
+  User user;
   String tableName;
+  String actualTableName;
 
-  public RegionsResource(String table) throws IOException {
+  public RegionsResource(User user, String table) throws IOException {
     super();
+    if (user != null) {
+      this.user = user;
+      this.actualTableName = 
+        !user.isAdmin() ? (user.getName() + "." + table) : table;
+    } else {
+      this.actualTableName = table;
+    }
     this.tableName = table;
   }
 
-  private Map<HRegionInfo,HServerAddress> getTableRegions()
-      throws IOException {
+  Map<HRegionInfo,HServerAddress> getTableRegions() throws IOException {
     HTablePool pool = servlet.getTablePool();
-    HTable table = pool.getTable(tableName);
+    HTable table = pool.getTable(actualTableName);
     try {
       return table.getRegionsInfo();
     } finally {
@@ -74,22 +83,32 @@ public class RegionsResource extends ResourceBase {
 
   @GET
   @Produces({MIMETYPE_TEXT, MIMETYPE_XML, MIMETYPE_JSON, MIMETYPE_PROTOBUF})
-  public Response get(final @Context UriInfo uriInfo) {
+  public Response get(final @Context UriInfo uriInfo) throws IOException {
     if (LOG.isDebugEnabled()) {
       LOG.debug("GET " + uriInfo.getAbsolutePath());
     }
+    if (!servlet.userRequestLimit(user, 1)) {
+      Response.status(509).build();
+    }
     servlet.getMetrics().incrementRequests(1);
     try {
-      TableInfoModel model = new TableInfoModel(tableName);
+      String name = user.isAdmin() ? actualTableName : tableName;
+      TableInfoModel model = new TableInfoModel(name);
       Map<HRegionInfo,HServerAddress> regions = getTableRegions();
       for (Map.Entry<HRegionInfo,HServerAddress> e: regions.entrySet()) {
         HRegionInfo hri = e.getKey();
-        HServerAddress addr = e.getValue();
-        InetSocketAddress sa = addr.getInetSocketAddress();
-        model.add(
-          new TableRegionModel(tableName, hri.getRegionId(),
-            hri.getStartKey(), hri.getEndKey(),
-            sa.getHostName() + ":" + Integer.valueOf(sa.getPort())));
+        if (user.isAdmin()) {
+          HServerAddress addr = e.getValue();
+          InetSocketAddress sa = addr.getInetSocketAddress();
+          model.add(
+            new TableRegionModel(name, hri.getRegionId(), hri.getStartKey(),
+              hri.getEndKey(),
+              sa.getHostName() + ":" + Integer.valueOf(sa.getPort())));
+        } else {
+          model.add(
+            new TableRegionModel(name, hri.getRegionId(), hri.getStartKey(),
+              hri.getEndKey()));
+        }
       }
       ResponseBuilder response = Response.ok(model);
       response.cacheControl(cacheControl);

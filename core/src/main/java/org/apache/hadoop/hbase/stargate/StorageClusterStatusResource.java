@@ -51,19 +51,21 @@ public class StorageClusterStatusResource extends ResourceBase {
     cacheControl.setNoTransform(false);
   }
 
-  /**
-   * Constructor
-   * @throws IOException
-   */
-  public StorageClusterStatusResource() throws IOException {
+  User user;
+
+  public StorageClusterStatusResource(User user) throws IOException {
     super();
+    this.user = user;
   }
 
   @GET
   @Produces({MIMETYPE_TEXT, MIMETYPE_XML, MIMETYPE_JSON, MIMETYPE_PROTOBUF})
-  public Response get(final @Context UriInfo uriInfo) {
+  public Response get(final @Context UriInfo uriInfo) throws IOException {
     if (LOG.isDebugEnabled()) {
       LOG.debug("GET " + uriInfo.getAbsolutePath());
+    }
+    if (!servlet.userRequestLimit(user, 1)) {
+      Response.status(509).build();
     }
     servlet.getMetrics().incrementRequests(1);
     try {
